@@ -168,7 +168,7 @@ def get(url, etag=None, modified=None, agent=None, referrer=None, handlers=None,
     request = _build_urllib2_request(url, agent, ACCEPT_HEADER, etag, modified, referrer, auth, request_headers)
     opener = urllib.request.build_opener(*tuple(handlers + [_FeedURLHandler()]))
     opener.addheaders = []  # RMK - must clear so we only send our custom User-Agent
-    f = opener.open(request)
+    f = opener.open(request, timeout=10) # tmf
     data = f.read()
     f.close()
 

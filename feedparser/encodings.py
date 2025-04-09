@@ -300,4 +300,4 @@ def convert_to_utf8(http_headers, data, result):
     if error:
         result['bozo'] = True
         result['bozo_exception'] = error
-    return data
+    return data, http_content_type

@@ -210,6 +210,7 @@ def parse(url_file_stream_or_string, etag=None, modified=None, agent=None, refer
         entries=[],
         feed=FeedParserDict(),
         headers={},
+        http_content_type=None,
     )
 
     try:
@@ -227,10 +228,18 @@ def parse(url_file_stream_or_string, etag=None, modified=None, agent=None, refer
     # overwrite existing headers using response_headers
     result['headers'].update(response_headers or {})
 
-    data = convert_to_utf8(result['headers'], data, result)
+    # tmf
+    data = data.replace(b"\x0c", b"")
+    data = data.replace(b"\x08", b"")
+    data = data.replace(b"\x18", b"")
+    data = data.replace(b"&nbsp;", b" ")
+    data = data.strip()
+    data, http_content_type = convert_to_utf8(result['headers'], data, result)
     use_strict_parser = result['encoding'] and True or False
 
     result['version'], data, entities = replace_doctype(data)
+    result['http_content_type'] = http_content_type
+    result['data'] = data
 
     # Ensure that baseuri is an absolute URI using an acceptable URI scheme.
     contentloc = result['headers'].get('content-location', '')
